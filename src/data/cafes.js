@@ -1,30 +1,30 @@
 const cafes = [
   {
     id: 1,
-    name: "Blue Bottle Cafe",
-    location: "Downtown",
+    name: "Indie Coffee",
+    location: "1225 Regent St",
     rating: 4.7,
     price: "$$",
-    image: "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
-    description: "A modern cafe with strong espresso and minimalist vibes."
+    image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb",
+    description: "Cozy breakfast & lunch coffee shop offering all-day waffles, Wisconsin microbrews & free events."
   },
   {
     id: 2,
-    name: "Sunny Side Coffee",
-    location: "Campus Area",
-    rating: 4.5,
+    name: "Colectivo",
+    location: "583 State St",
+    rating: 4.4,
     price: "$",
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
-    description: "Bright study spot with pastries and lots of seating."
+    image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24",
+    description: "Casual coffee shop chain with a variety of coffee drinks, plus quick bites and a patio."
   },
   {
     id: 3,
-    name: "Moonbean Roasters",
-    location: "North Side",
+    name: "Leopold's Books Bar Caffè",
+    location: "1301 Regent St",
     rating: 4.8,
     price: "$$$",
-    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e",
-    description: "Specialty coffee and artisan beans in a cozy setting."
+    image: "https://images.unsplash.com/photo-1521017432531-fbd92d768814",
+    description: "Bookstore with a cafe offering coffee and pastries, plus a cocktail bar and a patio."
   }
 ]
 

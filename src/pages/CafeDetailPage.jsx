@@ -1,15 +1,22 @@
-import { useParams } from 'react-router-dom'
-import { Container, Card } from 'react-bootstrap'
+import { useParams, Link } from 'react-router-dom'
+import { Container, Card, Button } from 'react-bootstrap'
 import cafes from '../data/cafes'
 
 function CafeDetailPage() {
   const { id } = useParams()
-  const cafe = cafes.find(c => c.id === Number(id))
+  const cafeId = Number(id)
+  const cafe = cafes.find(c => c.id === cafeId)
 
   if (!cafe) {
     return (
       <Container className="py-5">
         <h2>Cafe not found</h2>
+        <p className="text-muted">
+          This usually means the URL is missing/has an invalid cafe id.
+        </p>
+        <Button as={Link} to="/search" variant="dark">
+          Back to Search
+        </Button>
       </Container>
     )
   }
