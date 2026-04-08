@@ -10,7 +10,7 @@ function HomePage() {
         <Container>
           <Row className="align-items-center">
             <Col md={6}>
-              <h1>Find your next favorite cafe</h1>
+              <h1>Find local cafes!</h1>
               <p>
                 Explore cozy study spots, brunch cafes, and specialty coffee places
                 near you.

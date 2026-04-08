@@ -5,7 +5,7 @@ function AboutPage() {
     <Container className="py-5">
       <h1>About CafeFinder</h1>
       <p>
-        CafeFinder is a Yelp-inspired React project for discovering cafes,
+        CafeFinder search engine for discovering local cafes,
         comparing ratings, and browsing by location and price.
       </p>
     </Container>
