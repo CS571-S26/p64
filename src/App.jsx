@@ -1,3 +1,4 @@
+import './App.css'
 import { Routes, Route } from 'react-router-dom'
 import SiteNav from './components/SiteNav'
 import Footer from './components/Footer'
