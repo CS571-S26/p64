@@ -1,3 +1,5 @@
+// dummy api json used in the beginning stages of this app's creation. no longer used
+
 const cafes = [
   {
     id: 1,
