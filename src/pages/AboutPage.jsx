@@ -6,14 +6,15 @@ function AboutPage() {
     <>
       <PageHeader
         title="About CafeFinder"
-        subtitle="A simple way to discover cafes, compare ratings, and browse by location and price."
+        subtitle="A simple way to discover cafes using OpenStreetMap data and save your favorites."
       />
       <Container className="py-5">
         <h2 className="h4">How it works</h2>
         <ul>
-          <li>Use Search to find cafes by name or neighborhood</li>
-          <li>Filter results by price</li>
-          <li>Open any cafe to see details</li>
+          <li>Search for cafes in Dane County pulled from the Overpass API</li>
+          <li>Filter for wheelchair access, outdoor seating, or takeaway</li>
+          <li>Bookmark cafes and revisit them on the Bookmarks page</li>
+          <li>Write reviews and see all reviewed cafes on the Reviews page</li>
         </ul>
       </Container>
     </>

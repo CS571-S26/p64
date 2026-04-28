@@ -1,25 +1,76 @@
 import { Card, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import BookmarkButton from './BookmarkButton'
+import { getCafeFallbackImageUrl } from '../utils/images'
+import { useReviews } from '../contexts/ReviewsContext'
 
-function CafeCard({ cafe }) {
+function CafeCard({ cafe, imageUrl, reviewText, showReviewMeta = false, updatedAt }) {
+  const src = cafe.image || imageUrl || getCafeFallbackImageUrl(cafe, { variant: 'card' })
+  const alt = cafe.image || imageUrl ? `Photo of ${cafe.name}` : `Cafe photo placeholder for ${cafe.name}`
+  const { getReview } = useReviews()
+  const review = getReview(cafe?.id)
+  const rating = review?.rating || null
+  const stars = rating ? `${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}` : null
+
   return (
     <Card className="h-100 shadow-sm">
       <Card.Img
         variant="top"
-        src={cafe.image}
-        alt={cafe.name}
+        src={src}
+        alt={alt}
         style={{ height: '220px', objectFit: 'cover' }}
       />
       <Card.Body>
         <Card.Title>{cafe.name}</Card.Title>
         <Card.Text>
-          {cafe.location} <br />
-          Rating: {cafe.rating} <br />
-          Price: {cafe.price}
+          {cafe.location}
         </Card.Text>
-        <Button as={Link} to={`/cafe/${cafe.id}`} variant="outline-dark">
-          View Details
-        </Button>
+        <div className="d-flex gap-2">
+          <Button
+            as={Link}
+            to={`/cafe/${cafe.osmType}/${cafe.osmId}`}
+            variant="outline-dark"
+          >
+            View Details
+          </Button>
+          <BookmarkButton cafe={cafe} />
+          {stars ? (
+            <span
+              className="align-self-center text-warning fw-semibold"
+              aria-label={`Your rating: ${rating} out of 5 stars`}
+              title={`Your rating: ${rating}/5`}
+              style={{
+                textShadow: '-0.25px 0 #212529, 0 0.25px #212529, 0.25px 0 #212529, 0 -0.25px #212529',
+              }}
+            >
+              Your rating: {stars}
+            </span>
+          ) : null}
+        </div>
+        {reviewText && !showReviewMeta ? (
+          <Card.Text className="mt-3 mb-0 text-muted">
+            <strong>Your comment:</strong> {reviewText}
+          </Card.Text>
+        ) : null}
+        {showReviewMeta && rating ? (
+          <Card.Text className="mt-2 mb-0 text-muted">
+            <strong className="fs-6">Your Review</strong>
+            <br />
+            <strong>Rating:</strong> {rating}/5
+            {reviewText ? (
+              <>
+                <br />
+                <strong>Comment:</strong> {reviewText}
+              </>
+            ) : null}
+            {updatedAt ? (
+              <>
+                <br />
+                <strong>Updated:</strong> {new Date(updatedAt).toLocaleString()}
+              </>
+            ) : null}
+          </Card.Text>
+        ) : null}
       </Card.Body>
     </Card>
   )
