@@ -12,6 +12,7 @@ function CafeCard({
   updatedAt,
   showRatingLabel = true,
 }) {
+  const detailPath = cafe?.osmType && cafe?.osmId ? `/cafe/${cafe.osmType}/${cafe.osmId}` : null
   const src = cafe.image || imageUrl || getCafeFallbackImageUrl(cafe, { variant: 'card' })
   const alt = cafe.image || imageUrl ? `Photo of ${cafe.name}` : `Cafe photo placeholder for ${cafe.name}`
   const { getReview } = useReviews()
@@ -35,8 +36,9 @@ function CafeCard({
         <div className="d-flex gap-2">
           <Button
             as={Link}
-            to={`/cafe/${cafe.osmType}/${cafe.osmId}`}
+            to={detailPath || '#'}
             variant="outline-dark"
+            disabled={!detailPath}
           >
             View Details
           </Button>
@@ -55,8 +57,9 @@ function CafeCard({
           ) : (
             <Button
               as={Link}
-              to={`/cafe/${cafe.osmType}/${cafe.osmId}#review-heading`}
+              to={detailPath ? `${detailPath}#review-heading` : '#'}
               variant="outline-secondary"
+              disabled={!detailPath}
             >
               Review
             </Button>

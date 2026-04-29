@@ -3,11 +3,47 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 const FavoritesContext = createContext(null)
 const STORAGE_KEY = 'cafefinder.favorites.v1'
 
+function normalizeCafeSummary(cafe) {
+  if (!cafe || typeof cafe !== 'object') return null
+  const id = cafe.id ? String(cafe.id) : null
+  if (!id) return null
+
+  let osmType = cafe.osmType || null
+  let osmId = cafe.osmId || null
+
+  if ((!osmType || !osmId) && id.includes('/')) {
+    const [typeFromId, idFromValue] = id.split('/')
+    osmType = osmType || typeFromId || null
+    osmId = osmId || idFromValue || null
+  }
+
+  return {
+    id,
+    osmType,
+    osmId: osmId ? String(osmId) : null,
+    name: cafe.name || 'Unnamed cafe',
+    location: cafe.location || 'Dane County, WI',
+    image: cafe.image || null,
+  }
+}
+
 function readInitialFavorites() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     const parsed = raw ? JSON.parse(raw) : null
-    if (parsed && typeof parsed === 'object') return parsed
+    if (parsed && typeof parsed === 'object') {
+      const normalized = {}
+      for (const [key, value] of Object.entries(parsed)) {
+        const summary = normalizeCafeSummary(value)
+        if (summary?.id) {
+          normalized[summary.id] = summary
+        } else if (key && typeof key === 'string' && value && typeof value === 'object') {
+          const fallback = normalizeCafeSummary({ ...value, id: key })
+          if (fallback?.id) normalized[fallback.id] = fallback
+        }
+      }
+      return normalized
+    }
   } catch {
     // ignore
   }
@@ -27,16 +63,9 @@ export function FavoritesProvider({ children }) {
     const isFavorited = (id) => Boolean(id && favoritesById[id])
 
     const addFavorite = (cafe) => {
-      if (!cafe?.id) return
-      const summary = {
-        id: cafe.id,
-        osmType: cafe.osmType,
-        osmId: cafe.osmId,
-        name: cafe.name,
-        location: cafe.location,
-        image: cafe.image || null,
-      }
-      setFavoritesById(prev => ({ ...prev, [cafe.id]: summary }))
+      const summary = normalizeCafeSummary(cafe)
+      if (!summary?.id) return
+      setFavoritesById(prev => ({ ...prev, [summary.id]: summary }))
     }
 
     const removeFavorite = (id) => {
@@ -49,22 +78,15 @@ export function FavoritesProvider({ children }) {
     }
 
     const toggleFavorite = (cafe) => {
-      if (!cafe?.id) return
+      const summary = normalizeCafeSummary(cafe)
+      if (!summary?.id) return
       setFavoritesById(prev => {
-        if (prev[cafe.id]) {
+        if (prev[summary.id]) {
           const next = { ...prev }
-          delete next[cafe.id]
+          delete next[summary.id]
           return next
         }
-        const summary = {
-          id: cafe.id,
-          osmType: cafe.osmType,
-          osmId: cafe.osmId,
-          name: cafe.name,
-          location: cafe.location,
-          image: cafe.image || null,
-        }
-        return { ...prev, [cafe.id]: summary }
+        return { ...prev, [summary.id]: summary }
       })
     }
 

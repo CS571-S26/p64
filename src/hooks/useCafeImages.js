@@ -26,15 +26,19 @@ function stableShuffle(array, seed) {
 function loadCache() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : null
+    const parsed = raw ? JSON.parse(raw) : null
+    if (parsed && typeof parsed === 'object' && parsed.byCafeId && typeof parsed.byCafeId === 'object') {
+      return parsed.byCafeId
+    }
+    return parsed && typeof parsed === 'object' ? parsed : {}
   } catch {
-    return null
+    return {}
   }
 }
 
 function saveCache(value) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ byCafeId: value }))
   } catch {
     // ignore
   }
@@ -44,21 +48,14 @@ export function useCafeImages(cafes) {
   const accessKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY
 
   const cafeIds = useMemo(() => cafes.map(c => c.id).filter(Boolean), [cafes])
-  const cacheKey = useMemo(() => cafeIds.join('|'), [cafeIds])
-
-  const [imageByCafeId, setImageByCafeId] = useState(() => {
-    const cached = loadCache()
-    if (!cached || cached.cacheKey !== cacheKey) return {}
-    return cached.imageByCafeId || {}
-  })
+  const [allImagesByCafeId, setAllImagesByCafeId] = useState(() => loadCache())
 
   useEffect(() => {
     if (cafeIds.length === 0) return
     if (!accessKey) return
 
-    const cached = loadCache()
-    if (cached && cached.cacheKey === cacheKey && cached.imageByCafeId) {
-      setImageByCafeId(cached.imageByCafeId)
+    const missingCafeIds = cafeIds.filter(id => !allImagesByCafeId[id])
+    if (missingCafeIds.length === 0) {
       return
     }
 
@@ -67,29 +64,37 @@ export function useCafeImages(cafes) {
     fetchUnsplashCafePhotos({
       accessKey,
       perPage: 30,
-      pages: Math.ceil(cafeIds.length / 30) + 1,
+      pages: Math.ceil(missingCafeIds.length / 30) + 1,
       signal: controller.signal,
     })
       .then(photos => {
-        if (photos.length < cafeIds.length) {
+        if (photos.length < missingCafeIds.length) {
           throw new Error('Not enough unique Unsplash photos to assign one per cafe.')
         }
 
-        const shuffled = stableShuffle(photos, cacheKey)
-        const next = {}
-        for (let i = 0; i < cafeIds.length; i += 1) {
-          next[cafeIds[i]] = shuffled[i].url
+        const shuffled = stableShuffle(photos, missingCafeIds.join('|'))
+        const next = { ...allImagesByCafeId }
+        for (let i = 0; i < missingCafeIds.length; i += 1) {
+          next[missingCafeIds[i]] = shuffled[i].url
         }
 
-        setImageByCafeId(next)
-        saveCache({ cacheKey, imageByCafeId: next })
+        setAllImagesByCafeId(next)
+        saveCache(next)
       })
       .catch(() => {
         // If Unsplash fails, keep empty map and let UI fall back.
       })
 
     return () => controller.abort()
-  }, [accessKey, cafeIds, cacheKey])
+  }, [accessKey, cafeIds, allImagesByCafeId])
+
+  const imageByCafeId = useMemo(() => {
+    const scoped = {}
+    for (const id of cafeIds) {
+      if (allImagesByCafeId[id]) scoped[id] = allImagesByCafeId[id]
+    }
+    return scoped
+  }, [cafeIds, allImagesByCafeId])
 
   return { imageByCafeId, hasUniqueImages: Object.keys(imageByCafeId).length === cafeIds.length }
 }
