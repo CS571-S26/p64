@@ -23,7 +23,11 @@ function FavoritesPage() {
           <Row>
             {favorites.map(cafe => (
               <Col md={4} key={cafe.id} className="mb-4">
-                <CafeCard cafe={cafe} imageUrl={imageByCafeId[cafe.id]} />
+                <CafeCard
+                  cafe={cafe}
+                  imageUrl={imageByCafeId[cafe.id]}
+                  showRatingLabel={false}
+                />
               </Col>
             ))}
           </Row>

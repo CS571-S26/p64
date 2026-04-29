@@ -31,6 +31,7 @@ function ReviewedPage() {
                   reviewText={text}
                   showReviewMeta
                   updatedAt={updatedAt}
+                  showRatingLabel={false}
                 />
               </Col>
             ))}

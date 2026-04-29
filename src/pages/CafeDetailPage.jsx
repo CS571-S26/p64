@@ -16,6 +16,10 @@ function CafeDetailPage() {
   const [rating, setRating] = useState('5')
   const [reviewText, setReviewText] = useState('')
   const { getReview, upsertReview, removeReview } = useReviews()
+  const existingReview = cafe?.id ? getReview(cafe.id) : null
+  const ratingStars = existingReview?.rating
+    ? `${'★'.repeat(existingReview.rating)}${'☆'.repeat(5 - existingReview.rating)}`
+    : null
 
   useEffect(() => {
     const controller = new AbortController()
@@ -136,7 +140,21 @@ function CafeDetailPage() {
                 <hr />
 
                 <section aria-labelledby="review-heading">
-                  <h2 id="review-heading" className="h5 mb-3">Your Review</h2>
+                  <div className="d-flex align-items-center gap-2 mb-3">
+                    <h2 id="review-heading" className="h5 mb-0">Your Review</h2>
+                    {ratingStars ? (
+                      <span
+                        className="text-warning fw-semibold"
+                        aria-label={`Your rating: ${existingReview.rating} out of 5 stars`}
+                        title={`Your rating: ${existingReview.rating}/5`}
+                        style={{
+                          textShadow: '-0.25px 0 #212529, 0 0.25px #212529, 0.25px 0 #212529, 0 -0.25px #212529',
+                        }}
+                      >
+                        {ratingStars}
+                      </span>
+                    ) : null}
+                  </div>
                   <Form onSubmit={handleSubmitReview}>
                     <Form.Group className="mb-3" controlId="reviewRating">
                       <Form.Label>Rating</Form.Label>

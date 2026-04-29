@@ -4,7 +4,14 @@ import BookmarkButton from './BookmarkButton'
 import { getCafeFallbackImageUrl } from '../utils/images'
 import { useReviews } from '../contexts/ReviewsContext'
 
-function CafeCard({ cafe, imageUrl, reviewText, showReviewMeta = false, updatedAt }) {
+function CafeCard({
+  cafe,
+  imageUrl,
+  reviewText,
+  showReviewMeta = false,
+  updatedAt,
+  showRatingLabel = true,
+}) {
   const src = cafe.image || imageUrl || getCafeFallbackImageUrl(cafe, { variant: 'card' })
   const alt = cafe.image || imageUrl ? `Photo of ${cafe.name}` : `Cafe photo placeholder for ${cafe.name}`
   const { getReview } = useReviews()
@@ -43,9 +50,17 @@ function CafeCard({ cafe, imageUrl, reviewText, showReviewMeta = false, updatedA
                 textShadow: '-0.25px 0 #212529, 0 0.25px #212529, 0.25px 0 #212529, 0 -0.25px #212529',
               }}
             >
-              Your rating: {stars}
+              {showRatingLabel ? `Your rating: ${stars}` : stars}
             </span>
-          ) : null}
+          ) : (
+            <Button
+              as={Link}
+              to={`/cafe/${cafe.osmType}/${cafe.osmId}#review-heading`}
+              variant="outline-secondary"
+            >
+              Review
+            </Button>
+          )}
         </div>
         {reviewText && !showReviewMeta ? (
           <Card.Text className="mt-3 mb-0 text-muted">
